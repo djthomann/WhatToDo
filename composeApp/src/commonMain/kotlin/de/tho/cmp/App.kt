@@ -40,7 +40,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawWithCache
+import androidx.compose.ui.graphics.BlendMode
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.PointerIcon
+import androidx.compose.ui.input.pointer.pointerHoverIcon
+import androidx.compose.ui.input.pointer.pointerMoveFilter
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -52,6 +59,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import de.tho.cmp.TimerScreen
+import de.tho.cmp.WTDColor
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 data class Task(val description: String)
@@ -92,12 +100,22 @@ fun App() {
                         color = Color.Black,
                         fontSize = 28.sp,
                         fontWeight = FontWeight.Bold
-                    )
+                    ),
+                    modifier = Modifier.graphicsLayer(alpha = 0.99f)
+                    .drawWithCache {
+                        val brush = Brush.horizontalGradient(
+                            listOf(Color.Black, WTDColor.PURPLE.color)
+                        )
+                        onDrawWithContent {
+                            drawContent()
+                            drawRect(brush, blendMode = BlendMode.SrcAtop)
+                        }
+                    }
                 )
                 MinimalDropdownMenu(navController)
             }
 
-            Spacer(modifier = Modifier.padding(16.dp))
+            Spacer(modifier = Modifier.padding(8.dp))
 
             NavHost(navController = navController, startDestination = Screen.Timer.route) {
 
@@ -144,11 +162,12 @@ fun ToDoScreen(navController: NavController) {
                 value = newTaskString, onValueChange = {newTaskString = it}
             )
             Button(
-                modifier = Modifier.padding(0.dp).fillMaxHeight(),
+                modifier = Modifier.padding(0.dp).fillMaxHeight().pointerHoverIcon(PointerIcon.Hand),
+                shape = RoundedCornerShape(8.dp),
                 onClick = { addTask() },
                 contentPadding = PaddingValues(horizontal = 8.dp, vertical = 0.dp)
             ) {
-                Text("Click me!")
+                Text("Add Task")
             }
         }
         Spacer(modifier = Modifier.padding(8.dp))
@@ -173,17 +192,23 @@ fun TaskRow(task: Task, even: Boolean, onRemove: (Task) -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .height(60.dp)
-            .background(if (even) Color.Transparent else Color.LightGray),
-        verticalAlignment = Alignment.CenterVertically
+            .background(if (even) WTDColor.LIGHTPURPLE.color else WTDColor.LIGHTERPURPLE.color),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
     ) {
+        Text(
+            modifier = Modifier.padding(start = 20.dp),
+            text = task.description,
+        )
         RadioButton(
-
+            modifier = Modifier
+                .padding(end=10.dp)
+                .pointerHoverIcon(PointerIcon.Hand),
             selected = false,
             onClick = {
                 onRemove(task)
             }
         )
-        Text(text = task.description)
     }
 }
 
@@ -200,7 +225,9 @@ fun MinimalDropdownMenu(navController: NavController) {
         ) {
             for(screen in Screen.entries) {
                 DropdownMenuItem(
-                    onClick = { navController.navigate(screen.route) {
+                    onClick = {
+                        expanded = false
+                        navController.navigate(screen.route) {
                         navController.graph.startDestinationRoute?.let { route ->
                             popUpTo(route) {
                                 saveState = true

@@ -21,20 +21,19 @@ import androidx.navigation.NavController
 
 @Composable
 fun TimerScreen(navController: NavController) {
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(3),
-        modifier = Modifier.fillMaxSize().background(color = Color.Gray)
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        items(20) { index ->
-            DrawGradientCircles()
-        }
+        DrawGradientCircles()
     }
 }
 
 @Composable
 fun DrawGradientCircles() {
 
-    val radius = 50f
+    val radius = 200f
     val strokeWidth = 10f
     val canvasSize = (radius * 2 + strokeWidth).dp
 
@@ -45,7 +44,7 @@ fun DrawGradientCircles() {
 
         drawCircle(
             color = Color.Magenta,
-            radius = 100f,
+            radius = radius,
             center = center,
             style = Stroke(50f)
         )
