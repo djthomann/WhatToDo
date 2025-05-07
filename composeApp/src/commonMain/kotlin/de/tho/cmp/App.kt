@@ -59,6 +59,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import de.tho.cmp.TimerScreen
+import de.tho.cmp.ToDoScreen
 import de.tho.cmp.WTDColor
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -128,88 +129,8 @@ fun App() {
 }
 
 @Composable
-fun ToDoScreen(navController: NavController) {
+fun headerBar() {
 
-    val tasks = rememberSaveable { mutableStateListOf(Task("Task 1"), Task("2")) }
-
-    var newTaskString by remember { mutableStateOf("") }
-
-    fun addTask() {
-        if(newTaskString.isNotBlank()) {
-            tasks.add(Task(newTaskString))
-            newTaskString = ""
-        }
-    }
-
-    Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
-
-
-        Row(
-            modifier = Modifier.fillMaxWidth().height(60.dp),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            OutlinedTextField(
-                placeholder = { Text("Something you want to do...")},
-                modifier = Modifier.weight(1f).fillMaxHeight().padding(end = 8.dp),
-                shape = RoundedCornerShape(8.dp),
-                singleLine = true,
-                keyboardActions = KeyboardActions(
-                    onDone = { addTask() }
-                ),
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    imeAction = ImeAction.Done
-                ),
-                value = newTaskString, onValueChange = {newTaskString = it}
-            )
-            Button(
-                modifier = Modifier.padding(0.dp).fillMaxHeight().pointerHoverIcon(PointerIcon.Hand),
-                shape = RoundedCornerShape(8.dp),
-                onClick = { addTask() },
-                contentPadding = PaddingValues(horizontal = 8.dp, vertical = 0.dp)
-            ) {
-                Text("Add Task")
-            }
-        }
-        Spacer(modifier = Modifier.padding(8.dp))
-        LazyColumn(
-            modifier = Modifier
-                .clip(RoundedCornerShape(8.dp))
-                .border(shape = RoundedCornerShape(8.dp), border = BorderStroke(width = 2.dp, color = Color.Gray))
-            ,
-        ) {
-            itemsIndexed(tasks) { index, task ->
-                TaskRow(task, index % 2 == 0, {tasks.remove(task)})
-            }
-        }
-
-    }
-}
-
-@Composable
-fun TaskRow(task: Task, even: Boolean, onRemove: (Task) -> Unit) {
-
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(60.dp)
-            .background(if (even) WTDColor.LIGHTPURPLE.color else WTDColor.LIGHTERPURPLE.color),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        Text(
-            modifier = Modifier.padding(start = 20.dp),
-            text = task.description,
-        )
-        RadioButton(
-            modifier = Modifier
-                .padding(end=10.dp)
-                .pointerHoverIcon(PointerIcon.Hand),
-            selected = false,
-            onClick = {
-                onRemove(task)
-            }
-        )
-    }
 }
 
 @Composable
